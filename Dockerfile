@@ -27,8 +27,10 @@ WORKDIR /qt5/
 
 #Build qt5
 #RUN ./init-repository --module-subset=qtbase,qtdeclarative,qtquickcontrols2,qtwebsockets,qtsvg,qtcharts,qtgraphicaleffects,qtxmlpatterns,$QT_MODULE_SUBSET -f
-RUN ./configure -feature-thread -xplatform wasm-emscripten -nomake examples -prefix /qtbase -c++std c++17 -opensource -confirm-license $QT_CONFIGURE_OPTIONS
-RUN make module-qtbase module-qtsvg module-qtdeclarative module-qtwebsockets module-qtgraphicaleffects module-qtxmlpatterns module-qtquickcontrols2 module-qtcharts $QT_MODULES
+#RUN ./configure -xplatform wasm-emscripten -nomake examples -prefix /qtbase -c++std c++17 -opensource -confirm-license $QT_CONFIGURE_OPTIONS
+RUN ./configure -xplatform wasm-emscripten -nomake examples -prefix /qtbase -c++std c++17 -opensource -confirm-license
+#RUN make module-qtbase module-qtsvg module-qtdeclarative module-qtwebsockets module-qtgraphicaleffects module-qtxmlpatterns module-qtquickcontrols2 module-qtcharts $QT_MODULES
+RUN make module-qtbase module-qtsvg module-qtdeclarative module-qtwebsockets module-qtgraphicaleffects module-qtxmlpatterns module-qtquickcontrols2 module-qtcharts
 RUN make install
 
 #Copy files to new stage
