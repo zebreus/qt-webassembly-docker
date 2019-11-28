@@ -1,4 +1,6 @@
-FROM ((baseimage))
+ARG EMSCRIPTEN_BASE=
+
+FROM $EMSCRIPTEN_BASE
 MAINTAINER Lennart E.
 
 #Tnstall qt for webassembly
