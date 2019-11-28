@@ -1,4 +1,4 @@
-FROM trzeci/emscripten:sdk-tag-1.38.30-64bit
+FROM ((baseimage))
 MAINTAINER Lennart E.
 
 #Tnstall qt for webassembly
