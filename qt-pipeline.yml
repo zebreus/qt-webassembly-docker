@@ -1,0 +1,300 @@
+---
+resources:
+  - name: qt-webassembly-docker
+    type: git
+    source:
+      uri: https://github.com/Zebreus/qt-webassembly-docker.git
+      branch: master
+  - name: qt5-12
+    type: git
+    source:
+      uri: https://code.qt.io/qt/qt5.git
+      branch: 5.12
+  - name: qt5-13
+    type: git
+    source:
+      uri: https://code.qt.io/qt/qt5.git
+      branch: 5.13
+  - name: qt5-14
+    type: git
+    source:
+      uri: https://code.qt.io/qt/qt5.git
+      branch: 5.14
+  - name: qt-webassembly-qt5.13-em1.38.30
+    type: registry-image
+    source:
+      repository: ((registry_username))/qt-webassembly
+      username: ((registry_username))
+      password: ((registry_password))
+      tag: qt5.13-em1.38.30
+  - name: qt-webassembly-qt5.13-em1.38.27
+    type: registry-image
+    source:
+      repository: ((registry_username))/qt-webassembly
+      username: ((registry_username))
+      password: ((registry_password))
+      tag: qt5.13-em1.38.27
+  - name: qt-webassembly-qt5.14-em1.38.27
+    type: registry-image
+    source:
+      repository: ((registry_username))/qt-webassembly
+      username: ((registry_username))
+      password: ((registry_password))
+      tag: qt5.14-em1.38.27
+  - name: qt-webassembly-qt5.13-em1.38.30-threads
+    type: registry-image
+    source:
+      repository: ((registry_username))/qt-webassembly
+      username: ((registry_username))
+      password: ((registry_password))
+      tag: qt5.13-em1.38.30-multithreading
+  - name: qt-webassembly-qt5.12-em1.38.16
+    type: registry-image
+    source:
+      repository: ((registry_username))/qt-webassembly
+      username: ((registry_username))
+      password: ((registry_password))
+      tag: qt5.12-em1.38.16
+  - name: emscripten-1-38-16
+    type: registry-image
+    source:
+      repository: trzeci/emscripten
+      tag: sdk-tag-1.38.16-64bit
+  - name: emscripten-1-38-27
+    type: registry-image
+    source:
+      repository: trzeci/emscripten
+      tag: sdk-tag-1.38.27-64bit
+  - name: emscripten-1-38-30
+    type: registry-image
+    source:
+      repository: trzeci/emscripten
+      tag: sdk-tag-1.38.30-64bit
+  - name: oci-build-task
+    type: registry-image
+    source:
+      repository: vito/oci-build-task
+  - name: archlinux
+    type: registry-image
+    source:
+      repository: archlinux
+
+jobs:
+  - name: build-qt5.13-em1.38.30
+    public: true
+    serial_groups: [container-build]
+    plan:
+      - get: qt-webassembly-docker
+#        trigger: true
+      - get: emscripten-1-38-30
+        params:
+          format: oci
+        trigger: true
+      - get: qt5-13
+        trigger: true
+      - get: oci-build-task
+      - get: archlinux
+      - task: create-latest-tag-file
+        privileged: true
+        image: archlinux
+        config:
+          platform: linux
+          outputs:
+          - name: extratags
+          run:
+            path: bash
+            args:
+             - -ceux
+             - |
+               mkdir -p extratags/
+               echo "latest" > extratags/tags
+      - task: build-qt-webassembly-qt5.13-em1.38.30
+        privileged: true
+        image: oci-build-task
+        config:
+          platform: linux
+          params:
+            DOCKERFILE: ./qt-webassembly-docker/Dockerfile
+            BUILD_ARG_QT_DIRECTORY: qt/
+          inputs:
+          - name: qt-webassembly-docker
+          - name: emscripten-1-38-30
+            path: emscripten/
+          - name: qt5-13
+            path: qt/
+          outputs:
+          - name: image
+          caches:
+          - path: cache
+          run:
+            path: sh
+            args:
+             - -ceux
+             - |
+               export BUILD_ARG_EMSCRIPTEN_BASE="trzeci/emscripten@$(cat emscripten/digest)"
+               build
+      - put: qt-webassembly-qt5.13-em1.38.30
+        params:
+          image: image/image.tar
+          additional_tags: extratags/tags
+  - name: build-qt5.13-em1.38.30-threads
+    public: true
+    serial_groups: [container-build]
+    plan:
+      - get: qt-webassembly-docker
+#        trigger: true
+      - get: emscripten-1-38-30
+        params:
+          format: oci
+        trigger: true
+      - get: qt5-13
+        trigger: true
+      - get: oci-build-task
+      - task: build-qt-webassembly-qt5.13-em1.38.30-threads
+        privileged: true
+        image: oci-build-task
+        config:
+          platform: linux
+          params:
+            DOCKERFILE: ./qt-webassembly-docker/Dockerfile
+            BUILD_ARG_QT_DIRECTORY: qt/
+            BUILD_ARG_QT_CONFIGURE_OPTIONS: -feature-thread
+          inputs:
+          - name: qt-webassembly-docker
+          - name: emscripten-1-38-30
+            path: emscripten/
+          - name: qt5-13
+            path: qt/
+          outputs:
+          - name: image
+          caches:
+          - path: cache
+          run:
+            path: sh
+            args:
+             - -ceux
+             - |
+               export BUILD_ARG_EMSCRIPTEN_BASE="trzeci/emscripten@$(cat emscripten/digest)"
+               build
+      - put: qt-webassembly-qt5.13-em1.38.30-threads
+        params: {image: image/image.tar}
+  - name: build-qt5.13-em1.38.27
+    public: true
+    serial_groups: [container-build]
+    plan:
+      - get: qt-webassembly-docker
+#        trigger: true
+      - get: emscripten-1-38-27
+        params:
+          format: oci
+        trigger: true
+      - get: qt5-13
+        trigger: true
+      - get: oci-build-task
+      - task: build-qt-webassembly-qt5.13-em1.38.27
+        privileged: true
+        image: oci-build-task
+        config:
+          platform: linux
+          params:
+            DOCKERFILE: ./qt-webassembly-docker/Dockerfile
+            BUILD_ARG_QT_DIRECTORY: qt/
+          inputs:
+          - name: qt-webassembly-docker
+          - name: emscripten-1-38-27
+            path: emscripten/
+          - name: qt5-13
+            path: qt/
+          outputs:
+          - name: image
+          caches:
+          - path: cache
+          run:
+            path: sh
+            args:
+             - -ceux
+             - |
+               export BUILD_ARG_EMSCRIPTEN_BASE="trzeci/emscripten@$(cat emscripten/digest)"
+               build
+      - put: qt-webassembly-qt5.13-em1.38.27
+        params: {image: image/image.tar}
+  - name: build-qt5.14-em1.38.27
+    public: true
+    serial_groups: [container-build]
+    plan:
+      - get: qt-webassembly-docker
+#        trigger: true
+      - get: emscripten-1-38-27
+        params:
+          format: oci
+        trigger: true
+      - get: qt5-14
+        trigger: true
+      - get: oci-build-task
+      - task: build-qt-webassembly-qt5.14-em1.38.27
+        privileged: true
+        image: oci-build-task
+        config:
+          platform: linux
+          params:
+            DOCKERFILE: ./qt-webassembly-docker/Dockerfile
+            BUILD_ARG_QT_DIRECTORY: qt/
+          inputs:
+          - name: qt-webassembly-docker
+          - name: emscripten-1-38-27
+            path: emscripten/
+          - name: qt5-14
+            path: qt/
+          outputs:
+          - name: image
+          caches:
+          - path: cache
+          run:
+            path: sh
+            args:
+             - -ceux
+             - |
+               export BUILD_ARG_EMSCRIPTEN_BASE="trzeci/emscripten@$(cat emscripten/digest)"
+               build
+      - put: qt-webassembly-qt5.14-em1.38.27
+        params: {image: image/image.tar}
+  - name: build-qt5.12-em1.38.16
+    public: true
+    serial_groups: [container-build]
+    plan:
+      - get: qt-webassembly-docker
+#        trigger: true
+      - get: emscripten-1-38-16
+        params:
+          format: oci
+        trigger: true
+      - get: qt5-12
+        trigger: true
+      - get: oci-build-task
+      - task: build-qt-webassembly-qt5.12-em1.38.16
+        privileged: true
+        image: oci-build-task
+        config:
+          platform: linux
+          params:
+            DOCKERFILE: ./qt-webassembly-docker/Dockerfile
+            BUILD_ARG_QT_DIRECTORY: qt/
+          inputs:
+          - name: qt-webassembly-docker
+          - name: emscripten-1-38-16
+            path: emscripten/
+          - name: qt5-12
+            path: qt/
+          outputs:
+          - name: image
+          caches:
+          - path: cache
+          run:
+            path: sh
+            args:
+             - -ceux
+             - |
+               export BUILD_ARG_EMSCRIPTEN_BASE="trzeci/emscripten@$(cat emscripten/digest)"
+               build
+      - put: qt-webassembly-qt5.12-em1.38.16
+        params: {image: image/image.tar}
