@@ -18,7 +18,7 @@ ARG QT_MODULES=
 
 
 #Install git
-RUN apt update && apt install git
+#RUN apt update && apt install git
 
 #Copy qt5 source
 COPY $QT_DIRECTORY /qt5
