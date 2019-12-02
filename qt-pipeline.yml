@@ -20,6 +20,13 @@ resources:
     source:
       uri: https://code.qt.io/qt/qt5.git
       branch: 5.14
+  - name: qt-webassembly-latest
+    type: registry-image
+    source:
+      repository: ((registry_username))/qt-webassembly
+      username: ((registry_username))
+      password: ((registry_password))
+      tag: latest
   - name: qt-webassembly-qt5.13-em1.38.30
     type: registry-image
     source:
@@ -82,7 +89,7 @@ resources:
 jobs:
   - name: build-qt5.13-em1.38.30
     public: true
-    serial_groups: [container-build]
+#    serial_groups: [container-build]
     plan:
       - get: qt-webassembly-docker
 #        trigger: true
@@ -93,21 +100,6 @@ jobs:
       - get: qt5-13
         trigger: true
       - get: oci-build-task
-      - get: archlinux
-      - task: create-latest-tag-file
-        privileged: true
-        image: archlinux
-        config:
-          platform: linux
-          outputs:
-          - name: extratags
-          run:
-            path: bash
-            args:
-             - -ceux
-             - |
-               mkdir -p extratags/
-               echo "latest" > extratags/tags
       - task: build-qt-webassembly-qt5.13-em1.38.30
         privileged: true
         image: oci-build-task
@@ -116,6 +108,7 @@ jobs:
           params:
             DOCKERFILE: ./qt-webassembly-docker/Dockerfile
             BUILD_ARG_QT_DIRECTORY: qt/
+            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts
           inputs:
           - name: qt-webassembly-docker
           - name: emscripten-1-38-30
@@ -136,10 +129,14 @@ jobs:
       - put: qt-webassembly-qt5.13-em1.38.30
         params:
           image: image/image.tar
-          additional_tags: extratags/tags
+#          additional_tags: extratags/tags
+      - put: qt-webassembly-latest
+        params:
+          image: image/image.tar
+#          additional_tags: extratags/tags
   - name: build-qt5.13-em1.38.30-threads
     public: true
-    serial_groups: [container-build]
+#    serial_groups: [container-build]
     plan:
       - get: qt-webassembly-docker
 #        trigger: true
@@ -159,6 +156,7 @@ jobs:
             DOCKERFILE: ./qt-webassembly-docker/Dockerfile
             BUILD_ARG_QT_DIRECTORY: qt/
             BUILD_ARG_QT_CONFIGURE_OPTIONS: -feature-thread
+            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts
           inputs:
           - name: qt-webassembly-docker
           - name: emscripten-1-38-30
@@ -180,7 +178,7 @@ jobs:
         params: {image: image/image.tar}
   - name: build-qt5.13-em1.38.27
     public: true
-    serial_groups: [container-build]
+#    serial_groups: [container-build]
     plan:
       - get: qt-webassembly-docker
 #        trigger: true
@@ -199,6 +197,7 @@ jobs:
           params:
             DOCKERFILE: ./qt-webassembly-docker/Dockerfile
             BUILD_ARG_QT_DIRECTORY: qt/
+            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts
           inputs:
           - name: qt-webassembly-docker
           - name: emscripten-1-38-27
@@ -220,7 +219,7 @@ jobs:
         params: {image: image/image.tar}
   - name: build-qt5.14-em1.38.27
     public: true
-    serial_groups: [container-build]
+#    serial_groups: [container-build]
     plan:
       - get: qt-webassembly-docker
 #        trigger: true
@@ -239,6 +238,7 @@ jobs:
           params:
             DOCKERFILE: ./qt-webassembly-docker/Dockerfile
             BUILD_ARG_QT_DIRECTORY: qt/
+            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts
           inputs:
           - name: qt-webassembly-docker
           - name: emscripten-1-38-27
@@ -260,7 +260,7 @@ jobs:
         params: {image: image/image.tar}
   - name: build-qt5.12-em1.38.16
     public: true
-    serial_groups: [container-build]
+#    serial_groups: [container-build]
     plan:
       - get: qt-webassembly-docker
 #        trigger: true
