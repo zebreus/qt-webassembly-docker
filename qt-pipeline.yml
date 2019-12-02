@@ -134,7 +134,7 @@ jobs:
           params:
             DOCKERFILE: ./qt-webassembly-docker/Dockerfile
             BUILD_ARG_QT_DIRECTORY: qt/
-            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts
+            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts module-qtsvg module-qtwebsockets module-qtxmlpatterns module-qtquickcontrols2
           inputs:
           - name: qt-webassembly-docker
           - name: emscripten-1-38-30
@@ -179,7 +179,7 @@ jobs:
             DOCKERFILE: ./qt-webassembly-docker/Dockerfile
             BUILD_ARG_QT_DIRECTORY: qt/
             BUILD_ARG_QT_CONFIGURE_OPTIONS: -feature-thread
-            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts
+            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts module-qtsvg module-qtwebsockets module-qtxmlpatterns module-qtquickcontrols2
           inputs:
           - name: qt-webassembly-docker
           - name: emscripten-1-38-30
@@ -219,7 +219,7 @@ jobs:
           params:
             DOCKERFILE: ./qt-webassembly-docker/Dockerfile
             BUILD_ARG_QT_DIRECTORY: qt/
-            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts
+            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts module-qtsvg module-qtwebsockets module-qtxmlpatterns module-qtquickcontrols2
           inputs:
           - name: qt-webassembly-docker
           - name: emscripten-1-38-27
@@ -259,7 +259,7 @@ jobs:
           params:
             DOCKERFILE: ./qt-webassembly-docker/Dockerfile
             BUILD_ARG_QT_DIRECTORY: qt/
-            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts
+            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts module-qtsvg module-qtwebsockets module-qtxmlpatterns module-qtquickcontrols2
           inputs:
           - name: qt-webassembly-docker
           - name: emscripten-1-38-27
@@ -338,7 +338,7 @@ jobs:
           params:
             DOCKERFILE: ./qt-webassembly-docker/Dockerfile
             BUILD_ARG_QT_DIRECTORY: qt/
-            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts
+            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts module-qtsvg module-qtwebsockets module-qtxmlpatterns module-qtquickcontrols2
           inputs:
           - name: qt-webassembly-docker
           - name: emscripten-1-38-30
@@ -378,7 +378,7 @@ jobs:
           params:
             DOCKERFILE: ./qt-webassembly-docker/Dockerfile
             BUILD_ARG_QT_DIRECTORY: qt/
-            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts
+            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts module-qtsvg module-qtwebsockets module-qtxmlpatterns module-qtquickcontrols2
           inputs:
           - name: qt-webassembly-docker
           - name: emscripten-1-39-0
@@ -418,7 +418,7 @@ jobs:
           params:
             DOCKERFILE: ./qt-webassembly-docker/Dockerfile
             BUILD_ARG_QT_DIRECTORY: qt/
-            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts
+            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts module-qtsvg module-qtwebsockets module-qtxmlpatterns module-qtquickcontrols2
           inputs:
           - name: qt-webassembly-docker
           - name: emscripten-1-39-0-fastcomp
