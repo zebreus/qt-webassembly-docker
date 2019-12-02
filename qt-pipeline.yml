@@ -81,10 +81,6 @@ resources:
     type: registry-image
     source:
       repository: vito/oci-build-task
-  - name: archlinux
-    type: registry-image
-    source:
-      repository: archlinux
 
 jobs:
   - name: build-qt5.13-em1.38.30
