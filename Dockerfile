@@ -35,7 +35,7 @@ RUN make -j 24 -l 80 module-qtbase module-qtdeclarative $QT_MODULES
 RUN make install
 
 #Copy files to new stage
-FROM $EMSCRIPTEN_BASE AS 
+FROM $EMSCRIPTEN_BASE AS final-stage
 MAINTAINER Lennart E.
 COPY --from=qt-build-stage /qtbase /qtbase
 ENV PATH="/qtbase/bin:${PATH}"
