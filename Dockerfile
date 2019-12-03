@@ -35,7 +35,15 @@ RUN make -j 24 -l 80 module-qtbase module-qtdeclarative $QT_MODULES
 RUN make install
 
 #Copy files to new stage
-FROM $EMSCRIPTEN_BASE
+FROM $EMSCRIPTEN_BASE AS 
 MAINTAINER Lennart E.
 COPY --from=qt-build-stage /qtbase /qtbase
 ENV PATH="/qtbase/bin:${PATH}"
+
+#Create new entrypoint to use emscripten entrypoint and set path, because the
+# emscripten entrypoint ignores the path
+RUN mkdir -p /qt-webassembly/ ; \
+    echo "if test -f /emsdk_portable/entrypoint ; then /emsdk_portable/entrypoint sh -c \"PATH=\\\"/qtbase/bin:\\\$PATH\\\" \$* \" ; else \$* ; fi" >> /qt-webassembly/entrypoint.sh ; \
+    chmod -R a+r /qt-webassembly ; \
+    chmod a+x /qt-webassembly/entrypoint.sh
+ENTRYPOINT /qt-webassembly/entrypoint.sh
