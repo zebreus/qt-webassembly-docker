@@ -127,6 +127,7 @@ resources:
 
 jobs:
   - name: build-qt5.13-em1.38.30
+    serial_groups: [build-qt]
     public: true
     plan:
       - get: qt-webassembly-docker
@@ -171,6 +172,7 @@ jobs:
         params:
           image: image/image.tar
   - name: build-qt5.13-em1.38.30-threads
+    serial_groups: [build-qt]
     public: true
     plan:
       - get: qt-webassembly-docker
@@ -213,6 +215,7 @@ jobs:
         params: {image: image/image.tar}
   - name: build-qt5.13-em1.38.27
     public: true
+    serial_groups: [build-qt]
     plan:
       - get: qt-webassembly-docker
 #        trigger: true
@@ -253,6 +256,7 @@ jobs:
         params: {image: image/image.tar}
   - name: build-qt5.14-em1.38.27
     public: true
+    serial_groups: [build-qt]
     plan:
       - get: qt-webassembly-docker
 #        trigger: true
@@ -293,6 +297,7 @@ jobs:
         params: {image: image/image.tar}
   - name: build-qt5.12-em1.38.16
     public: true
+    serial_groups: [build-qt]
     plan:
       - get: qt-webassembly-docker
 #        trigger: true
@@ -332,6 +337,7 @@ jobs:
         params: {image: image/image.tar}
   - name: build-qt5.14-em1.38.30
     public: true
+    serial_groups: [build-qt]
     plan:
       - get: qt-webassembly-docker
 #        trigger: true
@@ -372,6 +378,7 @@ jobs:
         params: {image: image/image.tar}
   - name: build-qt5.14-em1.39.0
     public: true
+    serial_groups: [build-qt]
     plan:
       - get: qt-webassembly-docker
 #        trigger: true
@@ -412,6 +419,7 @@ jobs:
         params: {image: image/image.tar}
   - name: build-qt5.14-em1.39.3
     public: true
+    serial_groups: [build-qt]
     plan:
       - get: qt-webassembly-docker
 #        trigger: true
@@ -452,6 +460,7 @@ jobs:
         params: {image: image/image.tar}
   - name: build-qt5.14-em1.39.0-fastcomp
     public: true
+    serial_groups: [build-qt]
     plan:
       - get: qt-webassembly-docker
 #        trigger: true
