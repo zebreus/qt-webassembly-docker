@@ -76,6 +76,13 @@ resources:
       username: ((registry_username))
       password: ((registry_password))
       tag: qt5.14-em1.39.0
+  - name: qt-webassembly-qt5.14-em1.39.3
+    type: registry-image
+    source:
+      repository: ((registry_username))/qt-webassembly
+      username: ((registry_username))
+      password: ((registry_password))
+      tag: qt5.14-em1.39.3
   - name: qt-webassembly-qt5.14-em1.39.0-fastcomp
     type: registry-image
     source:
@@ -108,6 +115,11 @@ resources:
     source:
       repository: trzeci/emscripten
       tag: 1.39.0-fastcomp
+  - name: emscripten-1-39-3
+    type: registry-image
+    source:
+      repository: trzeci/emscripten
+      tag: sdk-tag-1.39.3-64bit
   - name: oci-build-task
     type: registry-image
     source:
@@ -398,6 +410,46 @@ jobs:
                build
       - put: qt-webassembly-qt5.14-em1.39.0
         params: {image: image/image.tar}
+  - name: build-qt5.14-em1.39.3
+    public: true
+    plan:
+      - get: qt-webassembly-docker
+#        trigger: true
+      - get: emscripten-1-39-3
+        params:
+          format: oci
+        trigger: true
+      - get: qt5-14
+        trigger: true
+      - get: oci-build-task
+      - task: build-qt-webassembly-qt5.14-em1.39.3
+        privileged: true
+        image: oci-build-task
+        config:
+          platform: linux
+          params:
+            DOCKERFILE: ./qt-webassembly-docker/Dockerfile
+            BUILD_ARG_QT_DIRECTORY: qt/
+            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts module-qtsvg module-qtwebsockets module-qtxmlpatterns module-qtquickcontrols2
+          inputs:
+          - name: qt-webassembly-docker
+          - name: emscripten-1-39-3
+            path: emscripten/
+          - name: qt5-14
+            path: qt/
+          outputs:
+          - name: image
+          caches:
+          - path: cache
+          run:
+            path: sh
+            args:
+             - -ceux
+             - |
+               export BUILD_ARG_EMSCRIPTEN_BASE="trzeci/emscripten@$(cat emscripten/digest)"
+               build
+      - put: qt-webassembly-qt5.14-em1.39.3
+        params: {image: image/image.tar}
   - name: build-qt5.14-em1.39.0-fastcomp
     public: true
     plan:
@@ -464,3 +516,4 @@ groups:
   - build-qt5.14-em1.38.30
   - build-qt5.14-em1.39.0
   - build-qt5.14-em1.39.0-fastcomp
+  - build-qt5.14-em1.39.3
