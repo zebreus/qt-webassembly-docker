@@ -43,7 +43,9 @@ ENV PATH="/qtbase/bin:${PATH}"
 #Create new entrypoint to use emscripten entrypoint and set path, because the
 # emscripten entrypoint ignores the path
 RUN mkdir -p /qt-webassembly/ ; \
-    echo "if test -f /emsdk_portable/entrypoint ; then /emsdk_portable/entrypoint sh -c \"PATH=\\\"/qtbase/bin:\\\$PATH\\\" \$* \" ; else \$* ; fi" >> /qt-webassembly/entrypoint.sh ; \
+    echo "#""!""/bin/sh" > /qt-webassembly/entrypoint ; \
+    echo "if test -f /emsdk_portable/entrypoint ; then /emsdk_portable/entrypoint sh -c \"PATH=\\\"/qtbase/bin:\\\$PATH\\\" \$* \" ; else \$* ; fi" >> /qt-webassembly/entrypoint ; \
     chmod -R a+r /qt-webassembly ; \
-    chmod a+x /qt-webassembly/entrypoint.sh
-ENTRYPOINT /qt-webassembly/entrypoint.sh
+    chmod a+x /qt-webassembly/entrypoint
+ENTRYPOINT ["/qt-webassembly/entrypoint"]
+CMD []
