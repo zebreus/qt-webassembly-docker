@@ -315,6 +315,7 @@ jobs:
           platform: linux
           params:
             DOCKERFILE: ./qt-webassembly-docker/Dockerfile
+            BUILD_ARG_QT_CONFIGURE_OPTIONS: -c++std c++11
             BUILD_ARG_QT_DIRECTORY: qt/
           inputs:
           - name: qt-webassembly-docker
