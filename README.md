@@ -8,7 +8,16 @@ This container is based on [trzeci/emscripten](https://github.com/trzecieu/emscr
 The [concourse pipeline](https://concourse.madmanfred.com/teams/main/pipelines/qt-webassembly) is constantly building images and putting them on dockerhub [madmanfred/qt-webassembly](https://hub.docker.com/repository/docker/madmanfred/qt-webassembly).
 
 ## Usage ##
-docker run --rm -v $(pwd):/src/ -u $(id -u):$(id -g) madmanfred/qt-webassembly qmake && make
+### bash ###
+```Shell
+docker run --rm -v $(pwd):/src/ -u $(id -u):$(id -g) madmanfred/qt-webassembly qmake
+docker run --rm -v $(pwd):/src/ -u $(id -u):$(id -g) madmanfred/qt-webassembly make
+```
+### powershell ###
+```PowerShell
+docker run --rm -v $(PWD):/src/ madmanfred/qt-webassembly qmake
+docker run --rm -v $(PWD):/src/ madmanfred/qt-webassembly make
+```
 
 ## Build status ##
 [<p align="center"><img src="https://images.madmanfred.com/qt-webassembly-status.jpg"></p>](https://concourse.einhorn.jetzt/teams/main/pipelines/qt-webassembly)
