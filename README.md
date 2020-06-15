@@ -26,7 +26,7 @@ docker run --rm -v $(PWD):/src/ madmanfred/qt-webassembly make
 Here are some tips to speed up your builds for Qt for WebAssembly:
 
 - You can add this to use a local directory as cache:
-  ```
+  ```Shell
   -v ~/.emscripten_cache:/emsdk_portable/.data/cache
   ```
 
@@ -35,7 +35,7 @@ Here are some tips to speed up your builds for Qt for WebAssembly:
 - You can also increase the compilation speed a bit by using a parallel build (`make -j`).
 
 - If you disable all optimizations you can reduce your build time significantly. Just add this to your project file:
-  ```
+  ```QMake
   QMAKE_CXXFLAGS_RELEASE -= -O3
   QMAKE_CXXFLAGS_RELEASE *= -O0
   
