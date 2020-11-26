@@ -1,0 +1,21 @@
+---
+platform: linux
+params:
+  DOCKERFILE: ./qt-webassembly-docker/Dockerfile
+  BUILD_ARG_QT_DIRECTORY: qt/
+  BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts module-qtsvg module-qtwebsockets module-qtxmlpatterns module-qtquickcontrols2
+inputs:
+- name: qt-webassembly-docker
+- name: qt
+- name: emscripten
+outputs:
+- name: image
+caches:
+- path: cache
+run:
+  path: sh
+  args:
+   - -ceux
+   - |
+     export BUILD_ARG_EMSCRIPTEN_BASE="trzeci/emscripten@$(cat emscripten/digest)"
+     build
