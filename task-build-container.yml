@@ -4,6 +4,7 @@ params:
   DOCKERFILE: ./qt-webassembly-docker/Dockerfile
   BUILD_ARG_QT_DIRECTORY: qt/
   BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts module-qtsvg module-qtwebsockets module-qtxmlpatterns module-qtquickcontrols2
+  BUILD_ARG_CPP_STD: c++14
 inputs:
 - name: qt-webassembly-docker
 - name: qt

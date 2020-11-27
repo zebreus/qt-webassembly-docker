@@ -16,6 +16,9 @@ ARG QT_MODULE_SUBSET=
 # Additional modules to make
 ARG QT_MODULES=
 
+# Additional modules to make
+ARG CPP_STD=
+
 
 #Install git
 #RUN apt update && apt install git
@@ -29,7 +32,7 @@ WORKDIR /qt5/
 #Build qt5
 #RUN ./init-repository --module-subset=qtbase,qtdeclarative,qtquickcontrols2,qtwebsockets,qtsvg,qtcharts,qtgraphicaleffects,qtxmlpatterns,$QT_MODULE_SUBSET -f
 #RUN ./init-repository --module-subset=qtbase,qtdeclarative,qtquickcontrols2,qtwebsockets,qtsvg,qtcharts,qtgraphicaleffects,qtxmlpatterns,$QT_MODULE_SUBSET
-RUN ./configure -xplatform wasm-emscripten -nomake examples -prefix /qtbase -c++std c++14 -opensource -confirm-license $QT_CONFIGURE_OPTIONS
+RUN ./configure -xplatform wasm-emscripten -nomake examples -prefix /qtbase -c++std $CPP_STD -opensource -confirm-license $QT_CONFIGURE_OPTIONS
 #RUN make module-qtbase module-qtsvg module-qtdeclarative module-qtwebsockets module-qtxmlpatterns module-qtquickcontrols2 module-qtgraphicaleffects module-qtcharts $QT_MODULES
 RUN make -j 24 -l 80 module-qtbase module-qtdeclarative $QT_MODULES
 RUN make install
