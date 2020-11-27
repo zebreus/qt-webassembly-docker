@@ -18,5 +18,5 @@ run:
   args:
    - -ceux
    - |
-     export BUILD_ARG_EMSCRIPTEN_BASE="trzeci/emscripten@$(cat emscripten/digest)"
+     export BUILD_ARG_EMSCRIPTEN_BASE="emscripten/emsdk@$(cat emscripten/digest)"
      build
