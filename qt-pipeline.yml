@@ -32,6 +32,34 @@ resources:
       username: ((registry_username))
       password: ((registry_password))
       tag: latest
+  - name: qt-webassembly-qt5.12
+    type: registry-image
+    source:
+      repository: ((registry_username))/qt-webassembly
+      username: ((registry_username))
+      password: ((registry_password))
+      tag: qt5.12
+  - name: qt-webassembly-qt5.13
+    type: registry-image
+    source:
+      repository: ((registry_username))/qt-webassembly
+      username: ((registry_username))
+      password: ((registry_password))
+      tag: qt5.13
+  - name: qt-webassembly-qt5.14
+    type: registry-image
+    source:
+      repository: ((registry_username))/qt-webassembly
+      username: ((registry_username))
+      password: ((registry_password))
+      tag: qt5.14
+  - name: qt-webassembly-qt5.15
+    type: registry-image
+    source:
+      repository: ((registry_username))/qt-webassembly
+      username: ((registry_username))
+      password: ((registry_password))
+      tag: qt5.15
   - name: qt-webassembly-qt5.12-em1.38.16
     type: registry-image
     source:
@@ -120,6 +148,8 @@ jobs:
         image: oci-build-task
       - put: qt-webassembly-qt5.12-em1.38.16
         params: {image: image/image.tar}
+      - put: qt-webassembly-qt5.12
+        params: {image: image/image.tar}
   - name: build-qt5.13-em1.38.27
     public: true
     serial_groups: [build-qt]
@@ -139,6 +169,8 @@ jobs:
         privileged: true
         image: oci-build-task
       - put: qt-webassembly-qt5.13-em1.38.27
+        params: {image: image/image.tar}
+      - put: qt-webassembly-qt5.13
         params: {image: image/image.tar}
   - name: build-qt5.13-em1.38.30-threads
     public: true
@@ -183,6 +215,8 @@ jobs:
         image: oci-build-task
       - put: qt-webassembly-qt5.14-em1.38.27
         params: {image: image/image.tar}
+      - put: qt-webassembly-qt5.14
+        params: {image: image/image.tar}
   - name: build-qt5.14-em1.38.30-threads
     public: true
     serial_groups: [build-qt]
@@ -224,6 +258,8 @@ jobs:
         privileged: true
         image: oci-build-task
       - put: qt-webassembly-qt5.15-em1.39.8
+        params: {image: image/image.tar}
+      - put: qt-webassembly-qt5.15
         params: {image: image/image.tar}
       - put: qt-webassembly-latest
         params: {image: image/image.tar}
