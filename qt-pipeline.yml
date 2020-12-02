@@ -154,47 +154,47 @@ resources:
   - name: emscripten-1-38-16
     type: registry-image
     source:
-      repository: trzeci/emscripten
+      repository: emscripten/emsdk
       tag: sdk-tag-1.38.16-64bit
   - name: emscripten-1-38-27
     type: registry-image
     source:
-      repository: trzeci/emscripten
+      repository: emscripten/emsdk
       tag: sdk-tag-1.38.27-64bit
   - name: emscripten-1-38-30
     type: registry-image
     source:
-      repository: trzeci/emscripten
+      repository: emscripten/emsdk
       tag: sdk-tag-1.38.30-64bit
   - name: emscripten-1-39-0
     type: registry-image
     source:
-      repository: trzeci/emscripten
+      repository: emscripten/emsdk
       tag: sdk-tag-1.39.0-64bit
   - name: emscripten-1-39-0-fastcomp
     type: registry-image
     source:
-      repository: trzeci/emscripten
+      repository: emscripten/emsdk
       tag: 1.39.0-fastcomp
   - name: emscripten-1-39-3
     type: registry-image
     source:
-      repository: trzeci/emscripten
+      repository: emscripten/emsdk
       tag: sdk-tag-1.39.3-64bit
   - name: emscripten-1-39-4
     type: registry-image
     source:
-      repository: trzeci/emscripten
+      repository: emscripten/emsdk
       tag: sdk-tag-1.39.4-64bit
   - name: emscripten-1-39-7
     type: registry-image
     source:
-      repository: trzeci/emscripten
+      repository: emscripten/emsdk
       tag: 1.39.7-upstream
   - name: emscripten-1-39-10
     type: registry-image
     source:
-      repository: trzeci/emscripten
+      repository: emscripten/emsdk
       tag: 1.39.10-upstream
   - name: oci-build-task
     type: registry-image
@@ -203,90 +203,45 @@ resources:
 
 jobs:
   - name: build-qt5.13-em1.38.30
-    serial_groups: [build-qt]
     public: true
+    serial_groups: [build-qt]
     plan:
       - get: qt-webassembly-docker
-#        trigger: true
-      - get: emscripten-1-38-30
+      - get:  emscripten
+        resource: emscripten-1-38-30
         params:
           format: oci
         trigger: true
-      - get: qt5-13
+      - get: qt
+        resource: qt5-13
         trigger: true
       - get: oci-build-task
-      - task: build-qt-webassembly-qt5.13-em1.38.30
+      - task: build-container
+        file: qt-webassembly-docker/task-build-container.yml
         privileged: true
         image: oci-build-task
-        config:
-          platform: linux
-          params:
-            DOCKERFILE: ./qt-webassembly-docker/Dockerfile
-            BUILD_ARG_QT_DIRECTORY: qt/
-            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts module-qtsvg module-qtwebsockets module-qtxmlpatterns module-qtquickcontrols2
-          inputs:
-          - name: qt-webassembly-docker
-          - name: emscripten-1-38-30
-            path: emscripten/
-          - name: qt5-13
-            path: qt/
-          outputs:
-          - name: image
-          caches:
-          - path: cache
-          run:
-            path: sh
-            args:
-             - -ceux
-             - |
-               export BUILD_ARG_EMSCRIPTEN_BASE="trzeci/emscripten@$(cat emscripten/digest)"
-               build
       - put: qt-webassembly-qt5.13-em1.38.30
-        params:
-          image: image/image.tar
-      - put: qt-webassembly-latest
-        params:
-          image: image/image.tar
+        params: {image: image/image.tar}
   - name: build-qt5.13-em1.38.30-threads
-    serial_groups: [build-qt]
     public: true
+    serial_groups: [build-qt]
     plan:
       - get: qt-webassembly-docker
-#        trigger: true
-      - get: emscripten-1-38-30
+      - get:  emscripten
+        resource: emscripten-1-38-30
         params:
           format: oci
         trigger: true
-      - get: qt5-13
+      - get: qt
+        resource: qt5-13
         trigger: true
       - get: oci-build-task
-      - task: build-qt-webassembly-qt5.13-em1.38.30-threads
+      - task: build-container
+        file: qt-webassembly-docker/task-build-container.yml
         privileged: true
         image: oci-build-task
-        config:
-          platform: linux
-          params:
-            DOCKERFILE: ./qt-webassembly-docker/Dockerfile
-            BUILD_ARG_QT_DIRECTORY: qt/
-            BUILD_ARG_QT_CONFIGURE_OPTIONS: -feature-thread
-            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts module-qtsvg module-qtwebsockets module-qtxmlpatterns module-qtquickcontrols2
-          inputs:
-          - name: qt-webassembly-docker
-          - name: emscripten-1-38-30
-            path: emscripten/
-          - name: qt5-13
-            path: qt/
-          outputs:
-          - name: image
-          caches:
-          - path: cache
-          run:
-            path: sh
-            args:
-             - -ceux
-             - |
-               export BUILD_ARG_EMSCRIPTEN_BASE="trzeci/emscripten@$(cat emscripten/digest)"
-               build
+        params:
+          BUILD_ARG_QT_CONFIGURE_OPTIONS: -feature-thread
       - put: qt-webassembly-qt5.13-em1.38.30-threads
         params: {image: image/image.tar}
   - name: build-qt5.13-em1.38.27
@@ -294,40 +249,19 @@ jobs:
     serial_groups: [build-qt]
     plan:
       - get: qt-webassembly-docker
-#        trigger: true
-      - get: emscripten-1-38-27
+      - get:  emscripten
+        resource: emscripten-1-38-27
         params:
           format: oci
         trigger: true
-      - get: qt5-13
+      - get: qt
+        resource: qt5-13
         trigger: true
       - get: oci-build-task
-      - task: build-qt-webassembly-qt5.13-em1.38.27
+      - task: build-container
+        file: qt-webassembly-docker/task-build-container.yml
         privileged: true
         image: oci-build-task
-        config:
-          platform: linux
-          params:
-            DOCKERFILE: ./qt-webassembly-docker/Dockerfile
-            BUILD_ARG_QT_DIRECTORY: qt/
-            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts module-qtsvg module-qtwebsockets module-qtxmlpatterns module-qtquickcontrols2
-          inputs:
-          - name: qt-webassembly-docker
-          - name: emscripten-1-38-27
-            path: emscripten/
-          - name: qt5-13
-            path: qt/
-          outputs:
-          - name: image
-          caches:
-          - path: cache
-          run:
-            path: sh
-            args:
-             - -ceux
-             - |
-               export BUILD_ARG_EMSCRIPTEN_BASE="trzeci/emscripten@$(cat emscripten/digest)"
-               build
       - put: qt-webassembly-qt5.13-em1.38.27
         params: {image: image/image.tar}
   - name: build-qt5.14-em1.38.27
@@ -335,40 +269,19 @@ jobs:
     serial_groups: [build-qt]
     plan:
       - get: qt-webassembly-docker
-#        trigger: true
-      - get: emscripten-1-38-27
+      - get:  emscripten
+        resource: emscripten-1-38-27
         params:
           format: oci
         trigger: true
-      - get: qt5-14
+      - get: qt
+        resource: qt5-14
         trigger: true
       - get: oci-build-task
-      - task: build-qt-webassembly-qt5.14-em1.38.27
+      - task: build-container
+        file: qt-webassembly-docker/task-build-container.yml
         privileged: true
         image: oci-build-task
-        config:
-          platform: linux
-          params:
-            DOCKERFILE: ./qt-webassembly-docker/Dockerfile
-            BUILD_ARG_QT_DIRECTORY: qt/
-            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts module-qtsvg module-qtwebsockets module-qtxmlpatterns module-qtquickcontrols2
-          inputs:
-          - name: qt-webassembly-docker
-          - name: emscripten-1-38-27
-            path: emscripten/
-          - name: qt5-14
-            path: qt/
-          outputs:
-          - name: image
-          caches:
-          - path: cache
-          run:
-            path: sh
-            args:
-             - -ceux
-             - |
-               export BUILD_ARG_EMSCRIPTEN_BASE="trzeci/emscripten@$(cat emscripten/digest)"
-               build
       - put: qt-webassembly-qt5.14-em1.38.27
         params: {image: image/image.tar}
   - name: build-qt5.12-em1.38.16
@@ -376,41 +289,19 @@ jobs:
     serial_groups: [build-qt]
     plan:
       - get: qt-webassembly-docker
-#        trigger: true
-      - get: emscripten-1-38-16
+      - get:  emscripten
+        resource: emscripten-1-38-16
         params:
           format: oci
         trigger: true
-      - get: qt5-12
+      - get: qt
+        resource: qt5-12
         trigger: true
       - get: oci-build-task
-      - task: build-qt-webassembly-qt5.12-em1.38.16
+      - task: build-container
+        file: qt-webassembly-docker/task-build-container.yml
         privileged: true
         image: oci-build-task
-        config:
-          platform: linux
-          params:
-            DOCKERFILE: ./qt-webassembly-docker/Dockerfile
-            BUILD_ARG_QT_CONFIGURE_OPTIONS: -c++std c++11
-            BUILD_ARG_QT_DIRECTORY: qt/
-            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts module-qtsvg module-qtwebsockets module-qtxmlpatterns module-qtquickcontrols2
-          inputs:
-          - name: qt-webassembly-docker
-          - name: emscripten-1-38-16
-            path: emscripten/
-          - name: qt5-12
-            path: qt/
-          outputs:
-          - name: image
-          caches:
-          - path: cache
-          run:
-            path: sh
-            args:
-             - -ceux
-             - |
-               export BUILD_ARG_EMSCRIPTEN_BASE="trzeci/emscripten@$(cat emscripten/digest)"
-               build
       - put: qt-webassembly-qt5.12-em1.38.16
         params: {image: image/image.tar}
   - name: build-qt5.14-em1.38.30
@@ -418,81 +309,41 @@ jobs:
     serial_groups: [build-qt]
     plan:
       - get: qt-webassembly-docker
-#        trigger: true
-      - get: emscripten-1-38-30
+      - get:  emscripten
+        resource: emscripten-1-38-30
         params:
           format: oci
         trigger: true
-      - get: qt5-14
+      - get: qt
+        resource: qt5-14
         trigger: true
       - get: oci-build-task
-      - task: build-qt-webassembly-qt5.14-em1.38.30
+      - task: build-container
+        file: qt-webassembly-docker/task-build-container.yml
         privileged: true
         image: oci-build-task
-        config:
-          platform: linux
-          params:
-            DOCKERFILE: ./qt-webassembly-docker/Dockerfile
-            BUILD_ARG_QT_DIRECTORY: qt/
-            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts module-qtsvg module-qtwebsockets module-qtxmlpatterns module-qtquickcontrols2
-          inputs:
-          - name: qt-webassembly-docker
-          - name: emscripten-1-38-30
-            path: emscripten/
-          - name: qt5-14
-            path: qt/
-          outputs:
-          - name: image
-          caches:
-          - path: cache
-          run:
-            path: sh
-            args:
-             - -ceux
-             - |
-               export BUILD_ARG_EMSCRIPTEN_BASE="trzeci/emscripten@$(cat emscripten/digest)"
-               build
       - put: qt-webassembly-qt5.14-em1.38.30
+        params: {image: image/image.tar}
+      - put: qt-webassembly-latest
         params: {image: image/image.tar}
   - name: build-qt5.14-em1.39.0
     public: true
     serial_groups: [build-qt]
     plan:
       - get: qt-webassembly-docker
-#        trigger: true
-      - get: emscripten-1-39-0
+      - get:  emscripten
+        resource: emscripten-1-39-0
         params:
           format: oci
         trigger: true
-      - get: qt5-14
+      - get: qt
+        resource: qt5-14
         trigger: true
       - get: oci-build-task
-      - task: build-qt-webassembly-qt5.14-em1.39.0
+      - task: build-container
+        file: qt-webassembly-docker/task-build-container.yml
         privileged: true
         image: oci-build-task
-        config:
-          platform: linux
-          params:
-            DOCKERFILE: ./qt-webassembly-docker/Dockerfile
-            BUILD_ARG_QT_DIRECTORY: qt/
-            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts module-qtsvg module-qtwebsockets module-qtxmlpatterns module-qtquickcontrols2
-          inputs:
-          - name: qt-webassembly-docker
-          - name: emscripten-1-39-0
-            path: emscripten/
-          - name: qt5-14
-            path: qt/
-          outputs:
-          - name: image
-          caches:
-          - path: cache
-          run:
-            path: sh
-            args:
-             - -ceux
-             - |
-               export BUILD_ARG_EMSCRIPTEN_BASE="trzeci/emscripten@$(cat emscripten/digest)"
-               build
       - put: qt-webassembly-qt5.14-em1.39.0
         params: {image: image/image.tar}
   - name: build-qt5.14-em1.39.3
@@ -500,81 +351,38 @@ jobs:
     serial_groups: [build-qt]
     plan:
       - get: qt-webassembly-docker
-#        trigger: true
-      - get: emscripten-1-39-3
+      - get:  emscripten
+        resource: emscripten-1-39-3
         params:
           format: oci
         trigger: true
-      - get: qt5-14
+      - get: qt
+        resource: qt5-14
         trigger: true
       - get: oci-build-task
-      - task: build-qt-webassembly-qt5.14-em1.39.3
+      - task: build-container
+        file: qt-webassembly-docker/task-build-container.yml
         privileged: true
         image: oci-build-task
-        config:
-          platform: linux
-          params:
-            DOCKERFILE: ./qt-webassembly-docker/Dockerfile
-            BUILD_ARG_QT_DIRECTORY: qt/
-            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts module-qtsvg module-qtwebsockets module-qtxmlpatterns module-qtquickcontrols2
-          inputs:
-          - name: qt-webassembly-docker
-          - name: emscripten-1-39-3
-            path: emscripten/
-          - name: qt5-14
-            path: qt/
-          outputs:
-          - name: image
-          caches:
-          - path: cache
-          run:
-            path: sh
-            args:
-             - -ceux
-             - |
-               export BUILD_ARG_EMSCRIPTEN_BASE="trzeci/emscripten@$(cat emscripten/digest)"
-               build
       - put: qt-webassembly-qt5.14-em1.39.3
         params: {image: image/image.tar}
   - name: build-qt5.14-em1.39.4
     public: true
-    serial_groups: [build-qt]
     plan:
       - get: qt-webassembly-docker
-#        trigger: true
-      - get: emscripten-1-39-4
+      - get:  emscripten
+        resource: emscripten-1-39-4
         params:
           format: oci
         trigger: true
-      - get: qt5-14
+      - get: qt
+        resource: qt5-14
         trigger: true
       - get: oci-build-task
-      - task: build-qt-webassembly-qt5.14-em1.39.4
+      - task: build-container
+        file: qt-webassembly-docker/task-build-container.yml
         privileged: true
         image: oci-build-task
-        config:
-          platform: linux
-          params:
-            DOCKERFILE: ./qt-webassembly-docker/Dockerfile
-            BUILD_ARG_QT_DIRECTORY: qt/
-            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts module-qtsvg module-qtwebsockets module-qtxmlpatterns module-qtquickcontrols2
-          inputs:
-          - name: qt-webassembly-docker
-          - name: emscripten-1-39-4
-            path: emscripten/
-          - name: qt5-14
-            path: qt/
-          outputs:
-          - name: image
-          caches:
-          - path: cache
-          run:
-            path: sh
-            args:
-             - -ceux
-             - |
-               export BUILD_ARG_EMSCRIPTEN_BASE="trzeci/emscripten@$(cat emscripten/digest)"
-               build
       - put: qt-webassembly-qt5.14-em1.39.4
         params: {image: image/image.tar}
   - name: build-qt5.14-em1.39.7
@@ -582,40 +390,19 @@ jobs:
     serial_groups: [build-qt]
     plan:
       - get: qt-webassembly-docker
-#        trigger: true
-      - get: emscripten-1-39-7
+      - get:  emscripten
+        resource: emscripten-1-39-7
         params:
           format: oci
         trigger: true
-      - get: qt5-14
+      - get: qt
+        resource: qt5-14
         trigger: true
       - get: oci-build-task
-      - task: build-qt-webassembly-qt5.14-em1.39.7
+      - task: build-container
+        file: qt-webassembly-docker/task-build-container.yml
         privileged: true
         image: oci-build-task
-        config:
-          platform: linux
-          params:
-            DOCKERFILE: ./qt-webassembly-docker/Dockerfile
-            BUILD_ARG_QT_DIRECTORY: qt/
-            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts module-qtsvg module-qtwebsockets module-qtxmlpatterns module-qtquickcontrols2
-          inputs:
-          - name: qt-webassembly-docker
-          - name: emscripten-1-39-7
-            path: emscripten/
-          - name: qt5-14
-            path: qt/
-          outputs:
-          - name: image
-          caches:
-          - path: cache
-          run:
-            path: sh
-            args:
-             - -ceux
-             - |
-               export BUILD_ARG_EMSCRIPTEN_BASE="trzeci/emscripten@$(cat emscripten/digest)"
-               build
       - put: qt-webassembly-qt5.14-em1.39.7
         params: {image: image/image.tar}
   - name: build-qt5.14-em1.39.0-fastcomp
@@ -623,40 +410,19 @@ jobs:
     serial_groups: [build-qt]
     plan:
       - get: qt-webassembly-docker
-#        trigger: true
-      - get: emscripten-1-39-0-fastcomp
+      - get:  emscripten
+        resource: emscripten-1-39-0-fastcomp
         params:
           format: oci
         trigger: true
-      - get: qt5-14
+      - get: qt
+        resource: qt5-14
         trigger: true
       - get: oci-build-task
-      - task: build-qt-webassembly-qt5.14-em1.39.0-fastcomp
+      - task: build-container
+        file: qt-webassembly-docker/task-build-container.yml
         privileged: true
         image: oci-build-task
-        config:
-          platform: linux
-          params:
-            DOCKERFILE: ./qt-webassembly-docker/Dockerfile
-            BUILD_ARG_QT_DIRECTORY: qt/
-            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts module-qtsvg module-qtwebsockets module-qtxmlpatterns module-qtquickcontrols2
-          inputs:
-          - name: qt-webassembly-docker
-          - name: emscripten-1-39-0-fastcomp
-            path: emscripten/
-          - name: qt5-14
-            path: qt/
-          outputs:
-          - name: image
-          caches:
-          - path: cache
-          run:
-            path: sh
-            args:
-             - -ceux
-             - |
-               export BUILD_ARG_EMSCRIPTEN_BASE="trzeci/emscripten@$(cat emscripten/digest)"
-               build
       - put: qt-webassembly-qt5.14-em1.39.0-fastcomp
         params: {image: image/image.tar}
   - name: build-qt5.15-em1.39.0
@@ -664,40 +430,19 @@ jobs:
     serial_groups: [build-qt]
     plan:
       - get: qt-webassembly-docker
-#        trigger: true
-      - get: emscripten-1-39-0
+      - get:  emscripten
+        resource: emscripten-1-39-0
         params:
           format: oci
         trigger: true
-      - get: qt5-15
+      - get: qt
+        resource: qt5-15
         trigger: true
       - get: oci-build-task
-      - task: build-qt-webassembly-qt5.15-em1.39.0
+      - task: build-container
+        file: qt-webassembly-docker/task-build-container.yml
         privileged: true
         image: oci-build-task
-        config:
-          platform: linux
-          params:
-            DOCKERFILE: ./qt-webassembly-docker/Dockerfile
-            BUILD_ARG_QT_DIRECTORY: qt/
-            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts module-qtsvg module-qtwebsockets module-qtxmlpatterns module-qtquickcontrols2
-          inputs:
-          - name: qt-webassembly-docker
-          - name: emscripten-1-39-0
-            path: emscripten/
-          - name: qt5-15
-            path: qt/
-          outputs:
-          - name: image
-          caches:
-          - path: cache
-          run:
-            path: sh
-            args:
-             - -ceux
-             - |
-               export BUILD_ARG_EMSCRIPTEN_BASE="trzeci/emscripten@$(cat emscripten/digest)"
-               build
       - put: qt-webassembly-qt5.15-em1.39.0
         params: {image: image/image.tar}
   - name: build-qt5.15-em1.39.3
@@ -705,40 +450,19 @@ jobs:
     serial_groups: [build-qt]
     plan:
       - get: qt-webassembly-docker
-#        trigger: true
-      - get: emscripten-1-39-3
+      - get:  emscripten
+        resource: emscripten-1-39-3
         params:
           format: oci
         trigger: true
-      - get: qt5-15
+      - get: qt
+        resource: qt5-15
         trigger: true
       - get: oci-build-task
-      - task: build-qt-webassembly-qt5.15-em1.39.3
+      - task: build-container
+        file: qt-webassembly-docker/task-build-container.yml
         privileged: true
         image: oci-build-task
-        config:
-          platform: linux
-          params:
-            DOCKERFILE: ./qt-webassembly-docker/Dockerfile
-            BUILD_ARG_QT_DIRECTORY: qt/
-            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts module-qtsvg module-qtwebsockets module-qtxmlpatterns module-qtquickcontrols2
-          inputs:
-          - name: qt-webassembly-docker
-          - name: emscripten-1-39-3
-            path: emscripten/
-          - name: qt5-15
-            path: qt/
-          outputs:
-          - name: image
-          caches:
-          - path: cache
-          run:
-            path: sh
-            args:
-             - -ceux
-             - |
-               export BUILD_ARG_EMSCRIPTEN_BASE="trzeci/emscripten@$(cat emscripten/digest)"
-               build
       - put: qt-webassembly-qt5.15-em1.39.3
         params: {image: image/image.tar}
   - name: build-qt5.15-em1.39.4
@@ -746,40 +470,19 @@ jobs:
     serial_groups: [build-qt]
     plan:
       - get: qt-webassembly-docker
-#        trigger: true
-      - get: emscripten-1-39-4
+      - get:  emscripten
+        resource: emscripten-1-39-4
         params:
           format: oci
         trigger: true
-      - get: qt5-15
+      - get: qt
+        resource: qt5-15
         trigger: true
       - get: oci-build-task
-      - task: build-qt-webassembly-qt5.15-em1.39.4
+      - task: build-container
+        file: qt-webassembly-docker/task-build-container.yml
         privileged: true
         image: oci-build-task
-        config:
-          platform: linux
-          params:
-            DOCKERFILE: ./qt-webassembly-docker/Dockerfile
-            BUILD_ARG_QT_DIRECTORY: qt/
-            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts module-qtsvg module-qtwebsockets module-qtxmlpatterns module-qtquickcontrols2
-          inputs:
-          - name: qt-webassembly-docker
-          - name: emscripten-1-39-4
-            path: emscripten/
-          - name: qt5-15
-            path: qt/
-          outputs:
-          - name: image
-          caches:
-          - path: cache
-          run:
-            path: sh
-            args:
-             - -ceux
-             - |
-               export BUILD_ARG_EMSCRIPTEN_BASE="trzeci/emscripten@$(cat emscripten/digest)"
-               build
       - put: qt-webassembly-qt5.15-em1.39.4
         params: {image: image/image.tar}
   - name: build-qt5.15-em1.39.7
@@ -787,40 +490,19 @@ jobs:
     serial_groups: [build-qt]
     plan:
       - get: qt-webassembly-docker
-#        trigger: true
-      - get: emscripten-1-39-7
+      - get:  emscripten
+        resource: emscripten-1-39-7
         params:
           format: oci
         trigger: true
-      - get: qt5-15
+      - get: qt
+        resource: qt5-15
         trigger: true
       - get: oci-build-task
-      - task: build-qt-webassembly-qt5.15-em1.39.7
+      - task: build-container
+        file: qt-webassembly-docker/task-build-container.yml
         privileged: true
         image: oci-build-task
-        config:
-          platform: linux
-          params:
-            DOCKERFILE: ./qt-webassembly-docker/Dockerfile
-            BUILD_ARG_QT_DIRECTORY: qt/
-            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts module-qtsvg module-qtwebsockets module-qtxmlpatterns module-qtquickcontrols2
-          inputs:
-          - name: qt-webassembly-docker
-          - name: emscripten-1-39-7
-            path: emscripten/
-          - name: qt5-15
-            path: qt/
-          outputs:
-          - name: image
-          caches:
-          - path: cache
-          run:
-            path: sh
-            args:
-             - -ceux
-             - |
-               export BUILD_ARG_EMSCRIPTEN_BASE="trzeci/emscripten@$(cat emscripten/digest)"
-               build
       - put: qt-webassembly-qt5.15-em1.39.7
         params: {image: image/image.tar}
   - name: build-qt5.14-em1.39.10
@@ -828,40 +510,19 @@ jobs:
     serial_groups: [build-qt]
     plan:
       - get: qt-webassembly-docker
-#        trigger: true
-      - get: emscripten-1-39-10
+      - get:  emscripten
+        resource: emscripten-1-39-10
         params:
           format: oci
         trigger: true
-      - get: qt5-14
+      - get: qt
+        resource: qt5-14
         trigger: true
       - get: oci-build-task
-      - task: build-qt-webassembly-qt5.14-em1.39.10
+      - task: build-container
+        file: qt-webassembly-docker/task-build-container.yml
         privileged: true
         image: oci-build-task
-        config:
-          platform: linux
-          params:
-            DOCKERFILE: ./qt-webassembly-docker/Dockerfile
-            BUILD_ARG_QT_DIRECTORY: qt/
-            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts module-qtsvg module-qtwebsockets module-qtxmlpatterns module-qtquickcontrols2
-          inputs:
-          - name: qt-webassembly-docker
-          - name: emscripten-1-39-10
-            path: emscripten/
-          - name: qt5-14
-            path: qt/
-          outputs:
-          - name: image
-          caches:
-          - path: cache
-          run:
-            path: sh
-            args:
-             - -ceux
-             - |
-               export BUILD_ARG_EMSCRIPTEN_BASE="trzeci/emscripten@$(cat emscripten/digest)"
-               build
       - put: qt-webassembly-qt5.14-em1.39.10
         params: {image: image/image.tar}
   - name: build-qt5.15-em1.39.10
@@ -869,45 +530,23 @@ jobs:
     serial_groups: [build-qt]
     plan:
       - get: qt-webassembly-docker
-#        trigger: true
-      - get: emscripten-1-39-10
+      - get:  emscripten
+        resource: emscripten-1-39-10
         params:
           format: oci
         trigger: true
-      - get: qt5-15
+      - get: qt
+        resource: qt5-15
         trigger: true
       - get: oci-build-task
-      - task: build-qt-webassembly-qt5.15-em1.39.10
+      - task: build-container
+        file: qt-webassembly-docker/task-build-container.yml
         privileged: true
         image: oci-build-task
-        config:
-          platform: linux
-          params:
-            DOCKERFILE: ./qt-webassembly-docker/Dockerfile
-            BUILD_ARG_QT_DIRECTORY: qt/
-            BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts module-qtsvg module-qtwebsockets module-qtxmlpatterns module-qtquickcontrols2
-          inputs:
-          - name: qt-webassembly-docker
-          - name: emscripten-1-39-10
-            path: emscripten/
-          - name: qt5-15
-            path: qt/
-          outputs:
-          - name: image
-          caches:
-          - path: cache
-          run:
-            path: sh
-            args:
-             - -ceux
-             - |
-               export BUILD_ARG_EMSCRIPTEN_BASE="trzeci/emscripten@$(cat emscripten/digest)"
-               build
       - put: qt-webassembly-qt5.15-em1.39.10
         params: {image: image/image.tar}
 
 groups:
-
 - name: all
   jobs:
   - build-qt5.12-em1.38.16
