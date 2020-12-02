@@ -43,6 +43,9 @@ MAINTAINER Lennart E.
 COPY --from=qt-build-stage /qtbase /qtbase
 ENV PATH="/qtbase/bin:${PATH}"
 
+#Set workdir to /src to maintain compatibility with older versions of this container
+WORKDIR /src/
+
 #Create new entrypoint to use emscripten entrypoint and set path, because the
 # emscripten entrypoint ignores the path
 RUN mkdir -p /qt-webassembly/ ; \
