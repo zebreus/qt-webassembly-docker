@@ -3,7 +3,7 @@ qt-webassembly-docker
 
 A container for building Qt applications for the web platform using [Qt for WebAssembly](https://doc.qt.io/qt-5/wasm.html).
 
-This container is based on [trzeci/emscripten](https://github.com/trzecieu/emscripten-docker).
+This container is based on the official emscripten docker image [emscripten/emsdk](https://github.com/emscripten-core/emsdk).
 
 The [concourse pipeline](https://concourse.madmanfred.com/teams/main/pipelines/qt-webassembly) is constantly building images and putting them on dockerhub [madmanfred/qt-webassembly](https://hub.docker.com/repository/docker/madmanfred/qt-webassembly).
 
