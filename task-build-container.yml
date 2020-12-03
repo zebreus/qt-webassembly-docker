@@ -5,6 +5,7 @@ params:
   BUILD_ARG_QT_DIRECTORY: qt/
   BUILD_ARG_QT_MODULES: module-qtgraphicaleffects module-qtcharts module-qtsvg module-qtwebsockets module-qtxmlpatterns module-qtquickcontrols2
   BUILD_ARG_CPP_STD: c++14
+  EMSCRIPTEN_BASE: emscripten/emsdk
 inputs:
 - name: qt-webassembly-docker
 - name: qt
@@ -18,5 +19,5 @@ run:
   args:
    - -ceux
    - |
-     export BUILD_ARG_EMSCRIPTEN_BASE="emscripten/emsdk@$(cat emscripten/digest)"
+     export BUILD_ARG_EMSCRIPTEN_BASE="${EMSCRIPTEN_BASE}@$(cat emscripten/digest)"
      build

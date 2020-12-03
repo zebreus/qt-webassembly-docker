@@ -105,17 +105,17 @@ resources:
   - name: emscripten-1-38-16
     type: registry-image
     source:
-      repository: emscripten/emsdk
+      repository: trzeci/emscripten
       tag: sdk-tag-1.38.16-64bit
   - name: emscripten-1-38-27
     type: registry-image
     source:
-      repository: emscripten/emsdk
+      repository: trzeci/emscripten
       tag: sdk-tag-1.38.27-64bit
   - name: emscripten-1-38-30
     type: registry-image
     source:
-      repository: emscripten/emsdk
+      repository: trzeci/emscripten
       tag: sdk-tag-1.38.30-64bit
   - name: emscripten-1-39-8
     type: registry-image
@@ -146,6 +146,8 @@ jobs:
         file: qt-webassembly-docker/task-build-container.yml
         privileged: true
         image: oci-build-task
+        params:
+          EMSCRIPTEN_BASE: trzeci/emscripten
       - put: qt-webassembly-qt5.12-em1.38.16
         params: {image: image/image.tar}
       - put: qt-webassembly-qt5.12
@@ -191,10 +193,10 @@ jobs:
         privileged: true
         image: oci-build-task
         params:
+          EMSCRIPTEN_BASE: trzeci/emscripten
           BUILD_ARG_QT_CONFIGURE_OPTIONS: -feature-thread
       - put: qt-webassembly-qt5.13-em1.38.30-threads
         params: {image: image/image.tar}
-
   - name: build-qt5.14-em1.38.27
     public: true
     serial_groups: [build-qt]
@@ -213,6 +215,8 @@ jobs:
         file: qt-webassembly-docker/task-build-container.yml
         privileged: true
         image: oci-build-task
+        params:
+          EMSCRIPTEN_BASE: trzeci/emscripten
       - put: qt-webassembly-qt5.14-em1.38.27
         params: {image: image/image.tar}
       - put: qt-webassembly-qt5.14
@@ -236,6 +240,7 @@ jobs:
         privileged: true
         image: oci-build-task
         params:
+          EMSCRIPTEN_BASE: trzeci/emscripten
           BUILD_ARG_QT_CONFIGURE_OPTIONS: -feature-thread
       - put: qt-webassembly-qt5.14-em1.38.30-threads
         params: {image: image/image.tar}
