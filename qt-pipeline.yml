@@ -170,6 +170,8 @@ jobs:
         file: qt-webassembly-docker/task-build-container.yml
         privileged: true
         image: oci-build-task
+        params:
+          EMSCRIPTEN_BASE: trzeci/emscripten
       - put: qt-webassembly-qt5.13-em1.38.27
         params: {image: image/image.tar}
       - put: qt-webassembly-qt5.13
