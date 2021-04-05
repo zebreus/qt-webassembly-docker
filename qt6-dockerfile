@@ -1,0 +1,62 @@
+#Base image with emscripten
+ARG EMSCRIPTEN_BASE=emscripten/emsdk:2.0.15
+
+FROM $EMSCRIPTEN_BASE AS emscripten-cmake
+MAINTAINER Lennart E.
+RUN apt update -y && apt upgrade -y && apt install -y wget git
+RUN version=3.19 ;\
+build=1 ;\
+cd $(mktemp -d) ;\
+wget https://cmake.org/files/v$version/cmake-$version.$build-Linux-x86_64.sh ;\
+mkdir -p /opt/cmake ;\
+bash cmake-$version.$build-Linux-x86_64.sh --skip-license --prefix=/opt/cmake
+ENV PATH="/opt/cmake/bin:${PATH}"
+
+FROM emscripten-cmake AS prepared-build-stage
+MAINTAINER Lennart E.
+RUN apt update -y && apt upgrade -y && apt install -y perl python gperf bison flex build-essential libclang-dev clang freeglut3-dev ninja-build
+#All modules working for webassembly
+#RUN git clone -b dev git://code.qt.io/qt/qt5.git /qt5 && cd /qt5 && ./init-repository --module-subset=qtbase,qtdeclarative,qttools,qttranslations,qtdoc,qtrepotools,qtqa,qtquickcontrols2,qtsvg,qtwayland,qtquicktimeline,qtquick3d,qtshadertools,qtlocation,qtimageformats,qtcharts,qtdatavis3d,qtscxml,qtlottie,qtmqtt,qtquickcontrols,qt5compat
+RUN git clone -b dev git://code.qt.io/qt/qt5.git /qt5 && cd /qt5 && ./init-repository --module-subset=essential
+
+FROM prepared-build-stage AS qt6-host-build-stage
+MAINTAINER Lennart E.
+RUN mkdir /build-host && cd /build-host && /qt5/configure -prefix /qtbase-host -platform linux-g++-64 -cmake-generator Ninja
+RUN cd /build-host && cmake --build . --parallel 8
+RUN cd /build-host && cmake --install .
+
+FROM prepared-build-stage AS qt6-wasm-build-stage
+MAINTAINER Lennart E.
+COPY --from=qt6-host-build-stage /qtbase-host /qtbase-host
+ENV PATH="/qtbase-host/bin:${PATH}"
+# For some reason configure with qttools fails, if these files are not there while configuring. I should look into this.
+RUN cd /qt5/qtbase/src/plugins/platforms/wasm && install -t /build-wasm/qtbase/plugins/platforms/ qtloader.js qtlogo.svg wasm_shell.html -D
+#TODO figure out how to enable webp support, as -webp qt does not work.
+RUN mkdir -p /build-wasm && cd /build-wasm && /qt5/configure -prefix /qtbase -qt-host-path /qtbase-host -xplatform wasm-emscripten -cmake-generator Ninja -nomake tests -nomake examples -developer-build -no-warnings-are-errors
+RUN cd /build-wasm && cmake --build . --parallel 8
+RUN cd /build-wasm && cmake --install .
+
+#Copy files to new stage
+FROM emscripten-cmake AS final-stage
+MAINTAINER Lennart E.
+RUN apt update -y && apt upgrade -y && apt install -y perl python gperf bison flex build-essential libclang-dev clang freeglut3-dev ninja-build
+
+# Copy host qt tools
+COPY --from=qt6-host-build-stage /qtbase-host /qtbase-host
+ENV PATH="/qtbase-host/bin:${PATH}"
+# Copy qt library
+COPY --from=qt6-wasm-build-stage /qtbase /qtbase
+ENV PATH="/qtbase/bin:${PATH}"
+
+#Set workdir to /src to maintain compatibility with older versions of this container
+WORKDIR /src/
+
+#Create new entrypoint to use emscripten entrypoint and set path, because the
+# emscripten entrypoint ignores the path
+RUN mkdir -p /qt-webassembly/ ; \
+    echo "#""!""/bin/sh" > /qt-webassembly/entrypoint ; \
+    echo "if test -f /emsdk_portable/entrypoint ; then /emsdk_portable/entrypoint sh -c \"PATH=\\\"/qtbase/bin:\\\$PATH\\\" \$* \" ; else \$* ; fi" >> /qt-webassembly/entrypoint ; \
+    chmod -R a+r /qt-webassembly ; \
+    chmod a+x /qt-webassembly/entrypoint
+ENTRYPOINT ["/qt-webassembly/entrypoint"]
+CMD []
