@@ -7,6 +7,8 @@ This container is based on the official emscripten docker image [emscripten/emsd
 
 The [concourse pipeline](https://concourse.madmanfred.com/teams/main/pipelines/qt-webassembly) is constantly building images and putting them on dockerhub [madmanfred/qt-webassembly](https://hub.docker.com/repository/docker/madmanfred/qt-webassembly).
 
+Please create issues related to this image on the associated [GitHub project](https://github.com/Zebreus/qt-webassembly-docker).
+
 ## Usage ##
 ### bash ###
 ```Shell
