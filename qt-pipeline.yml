@@ -25,6 +25,11 @@ resources:
     source:
       uri: https://code.qt.io/qt/qt5.git
       branch: 5.15
+  - name: qt6-0
+    type: git
+    source:
+      uri: https://code.qt.io/qt/qt5.git
+      branch: 6.0
   - name: qt-webassembly-latest
     type: registry-image
     source:
@@ -270,6 +275,30 @@ jobs:
         params: {image: image/image.tar}
       - put: qt-webassembly-latest
         params: {image: image/image.tar}
+  - name: build-qt6.0-em1.39.8
+    public: true
+    serial_groups: [build-qt]
+    plan:
+      - get: qt-webassembly-docker
+      - get:  emscripten
+        resource: emscripten-1-39-8
+        params:
+          format: oci
+        trigger: true
+      - get: qt
+        resource: qt5-15
+        trigger: true
+      - get: oci-build-task
+      - task: build-container
+        file: qt-webassembly-docker/task-build-container.yml
+        privileged: true
+        image: oci-build-task
+      - put: qt-webassembly-qt6.0-em1.39.8
+        params: {image: image/image.tar}
+      - put: qt-webassembly-qt6.0
+        params: {image: image/image.tar}
+      - put: qt-webassembly-dev
+        params: {image: image/image.tar}
 
 groups:
 - name: all
@@ -294,3 +323,6 @@ groups:
 - name: qt5-15
   jobs:
   - build-qt5.15-em1.39.8
+- name: qt6-0
+  jobs:
+  - build-qt6.0-em1.39.8
